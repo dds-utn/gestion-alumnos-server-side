@@ -1,0 +1,162 @@
+<html th:replace="~{layout/base ::html}">
+<div th:fragment="contenido" class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-user me-2"></i>
+                <span th:text="${titulo}">Detalle del Alumno</span>
+            </h1>
+            <div>
+                <a th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}" class="btn btn-warning me-2">
+                    <i class="fas fa-edit me-1"></i>
+                    Editar
+                </a>
+                <a href="/alumnos" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Volver a la Lista
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Información básica -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-id-card me-2"></i>
+                            Información Personal
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Legajo:</label>
+                                    <p class="form-control-plaintext">
+                                        <span class="badge bg-primary fs-6" th:text="${alumno.legajo}">LEG001</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Nombre Completo:</label>
+                                    <p class="form-control-plaintext" th:text="${alumno.nombreCompleto}">Juan Pérez</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Nombre:</label>
+                                    <p class="form-control-plaintext" th:text="${alumno.nombre}">Juan</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Apellido:</label>
+                                    <p class="form-control-plaintext" th:text="${alumno.apellido}">Pérez</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contactos -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-address-book me-2"></i>
+                            Información de Contacto
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${!tieneContactos}" class="text-center py-4">
+                            <i class="fas fa-phone-slash fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">Sin información de contacto</h6>
+                            <p class="text-muted">Este alumno no tiene contactos registrados</p>
+                        </div>
+
+                        <div th:if="${tieneContactos}" class="row">
+                            <div th:each="contacto : ${alumno.contactos}" class="col-md-6 mb-3">
+                                <div class="card border">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i th:if="${contacto.tipoContacto.name() == 'EMAIL'}" 
+                                                   class="fas fa-envelope fa-2x text-primary"></i>
+                                                <i th:if="${contacto.tipoContacto.name() == 'TELEFONO'}" 
+                                                   class="fas fa-phone fa-2x text-success"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="card-title mb-1" th:text="${contacto.tipoContactoDescripcion}">EMAIL</h6>
+                                                <p class="card-text mb-0" th:text="${contacto.valor}">juan@email.com</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Acciones rápidas -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-tools me-2"></i>
+                            Acciones
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}" class="btn btn-warning">
+                                <i class="fas fa-edit me-1"></i>
+                                Editar Alumno
+                            </a>
+                            <button type="button" class="btn btn-danger" 
+                                    th:data-legajo="${alumno.legajo}"
+                                    th:data-nombre="${alumno.nombreCompleto}"
+                                    onclick="eliminarAlumno(this.dataset.legajo, this.dataset.nombre)">
+                                <i class="fas fa-trash me-1"></i>
+                                Eliminar Alumno
+                            </button>
+                            <hr>
+                            <a href="/alumnos" class="btn btn-outline-secondary">
+                                <i class="fas fa-list me-1"></i>
+                                Ver Todos los Alumnos
+                            </a>
+                            <a href="/alumnos/nuevo" class="btn btn-outline-primary">
+                                <i class="fas fa-plus me-1"></i>
+                                Nuevo Alumno
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Información
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            Última actualización: <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">Hoy</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- El modal de eliminación se crea dinámicamente en common.js -->
+
+    <!-- Script específico para la página de detalle de alumno -->
+    <script src="/js/alumnos/detalle-alumno.js"></script>
+</div>
+</html>

@@ -1,0 +1,36 @@
+<!-- Fragmento de estadísticas para la página de lista de alumnos -->
+<div th:fragment="estadisticas" class="row mb-4">
+    <!-- Card de Total de Alumnos -->
+    <div class="col-md-6 mb-3">
+        <div class="card bg-primary text-white stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="card-title mb-1" th:text="${totalDeAlumnos}">0</h4>
+                        <p class="card-text mb-0">Total de Alumnos</p>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card de Estado del Sistema -->
+    <div class="col-md-6 mb-3">
+        <div class="card bg-success text-white stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="card-title mb-1">Sistema Activo</h4>
+                        <p class="card-text mb-0">Funcionando correctamente</p>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

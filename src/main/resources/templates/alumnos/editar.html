@@ -1,0 +1,189 @@
+<html th:replace="~{layout/base ::html}">
+<div th:fragment="contenido" class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-user-edit me-2"></i>
+                <span th:text="${titulo}">Editar Alumno</span>
+            </h1>
+            <div>
+                <a th:href="@{/alumnos/{legajo}(legajo=${alumno.legajo})}" class="btn btn-info me-2">
+                    <i class="fas fa-eye me-1"></i>
+                    Ver Detalle
+                </a>
+                <a th:href="@{/alumnos}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Volver a la Lista
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-id-card me-2"></i>
+                            Información del Alumno
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/alumnos/{legajo}/actualizar(legajo=${alumno.legajo})}" th:object="${alumno}" method="post">
+                            <!-- Información básica -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="legajo" class="form-label">Legajo <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="legajo" th:field="*{legajo}" 
+                                               placeholder="Ej: LEG001" required>
+                                        <div th:if="${#fields.hasErrors('legajo')}" class="text-danger">
+                                            <small th:errors="*{legajo}">Error en legajo</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nombre" th:field="*{nombre}" 
+                                               placeholder="Ej: Juan" required>
+                                        <div th:if="${#fields.hasErrors('nombre')}" class="text-danger">
+                                            <small th:errors="*{nombre}">Error en nombre</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="apellido" class="form-label">Apellido <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="apellido" th:field="*{apellido}" 
+                                               placeholder="Ej: Pérez" required>
+                                        <div th:if="${#fields.hasErrors('apellido')}" class="text-danger">
+                                            <small th:errors="*{apellido}">Error en apellido</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <!-- Contactos -->
+                            <div class="mb-3">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-address-book me-2"></i>
+                                    Información de Contacto
+                                </h6>
+                                
+                                <div id="contactos-container">
+                                    <div class="contacto-item border rounded p-3 mb-3" th:each="contacto, iterStat : *{contactos}">
+                                        <input type="hidden" th:field="*{contactos[__${iterStat.index}__].id}">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Tipo de Contacto</label>
+                                                <select class="form-select" th:field="*{contactos[__${iterStat.index}__].tipoContacto}">
+                                                    <option value="">Seleccionar...</option>
+                                                    <option value="EMAIL">Email</option>
+                                                    <option value="TELEFONO">Teléfono</option>
+                                                </select>
+                                                <div th:if="${#fields.hasErrors('contactos[' + iterStat.index + '].tipoContacto')}" class="text-danger">
+                                                    <small th:errors="*{contactos[__${iterStat.index}__].tipoContacto}">Error en tipo</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Valor</label>
+                                                <input type="text" class="form-control" 
+                                                       th:field="*{contactos[__${iterStat.index}__].valor}"
+                                                       placeholder="Ej: juan@email.com o +54 11 1234-5678">
+                                                <div th:if="${#fields.hasErrors('contactos[' + iterStat.index + '].valor')}" class="text-danger">
+                                                    <small th:errors="*{contactos[__${iterStat.index}__].valor}">Error en valor</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 d-flex align-items-end">
+                                                <button type="button" class="btn btn-outline-danger btn-sm w-100" 
+                                                        onclick="eliminarContacto(this)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="agregarContacto()">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Agregar Contacto
+                                </button>
+                            </div>
+
+                            <hr>
+
+                            <!-- Botones -->
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <a th:href="@{/alumnos/{legajo}(legajo=${alumno.legajo})}" class="btn btn-secondary me-2">
+                                        <i class="fas fa-times me-1"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="button" class="btn btn-danger" 
+                                            th:data-legajo="${alumno.legajo}"
+                                            th:data-nombre="${alumno.nombreCompleto}"
+                                            onclick="eliminarAlumno(this.dataset.legajo, this.dataset.nombre)">
+                                        <i class="fas fa-trash me-1"></i>
+                                        Eliminar
+                                    </button>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>
+                                    Actualizar Alumno
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Información
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle me-1"></i> Importante:</h6>
+                            <ul class="mb-0 small">
+                                <li>Si cambias el legajo, debe ser único</li>
+                                <li>Los campos marcados con * son obligatorios</li>
+                                <li>Puedes modificar o eliminar contactos existentes</li>
+                                <li>Los cambios se guardarán al actualizar</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>
+                            Historial
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            Última actualización: <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">Hoy</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- El modal de eliminación se crea dinámicamente en common.js -->
+
+    <!-- Script específico para la página de editar alumno -->
+    <script src="/js/alumnos/editar-alumno.js"></script>
+</div>
+</html>

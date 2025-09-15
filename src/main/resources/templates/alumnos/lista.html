@@ -1,0 +1,97 @@
+<html th:replace="~{layout/base :: html}">
+<div th:fragment="contenido" class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-users me-2"></i>
+                <span th:text="${titulo}">Listado de alumnos</span>
+            </h1>
+            <a th:href="@{/alumnos/nuevo}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>
+                Nuevo Alumno
+            </a>
+        </div>
+
+        <!-- Estadísticas -->
+        <div th:replace="~{alumnos/fragments/estadisticas :: estadisticas}"></div>
+
+        <!-- Lista de alumnos -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Alumnos Registrados
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div th:if="${alumnos.empty}" class="text-center py-5">
+                    <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No hay alumnos registrados</h5>
+                    <p class="text-muted">Comienza agregando tu primer alumno</p>
+                    <a th:href="@{/alumnos/nuevo}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>
+                        Agregar Primer Alumno
+                    </a>
+                </div>
+
+                <div th:unless="${alumnos.empty}" class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Legajo</th>
+                            <th>Nombre Completo</th>
+                            <th>Contactos</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="alumno : ${alumnos}">
+                            <td>
+                                <span class="badge bg-secondary" th:text="${alumno.legajo}">LEG001</span>
+                            </td>
+                            <td>
+                                <div>
+                                    <strong th:text="${alumno.nombreCompleto}">Juan Pérez</strong>
+                                </div>
+                            </td>
+                            <td>
+                                    <span th:if="${alumno.contactos.empty}" class="text-muted">
+                                        <i class="fas fa-minus me-1"></i>
+                                        Sin contactos
+                                    </span>
+                                <span th:unless="${alumno.contactos.empty}" class="text-success">
+                                        <i class="fas fa-check me-1"></i>
+                                        <span th:text="${#lists.size(alumno.contactos)}">2</span> contacto(s)
+                                    </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{/alumnos/{legajo}(legajo=${alumno.legajo})}"
+                                       class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}"
+                                       class="btn btn-sm btn-outline-warning" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            th:data-legajo="${alumno.legajo}"
+                                            th:data-nombre="${alumno.nombreCompleto}"
+                                            onclick="eliminarAlumno(this.dataset.legajo, this.dataset.nombre)"
+                                            title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- El modal de eliminación se crea dinámicamente en common.js -->
+    <!-- Script específico para la página de lista -->
+    <script src="/js/alumnos/lista-alumnos.js"></script>
+</div>
+</html>
