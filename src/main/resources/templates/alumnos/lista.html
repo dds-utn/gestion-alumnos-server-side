@@ -6,7 +6,7 @@
                 <i class="fas fa-users me-2"></i>
                 <span th:text="${titulo}">Listado de alumnos</span>
             </h1>
-            <a th:href="@{/alumnos/nuevo}" class="btn btn-primary">
+            <a sec:authorize="hasAuthority('CREAR_ALUMNOS')" th:href="@{/alumnos/nuevo}" class="btn btn-primary">
                 <i class="fas fa-plus me-1"></i>
                 Nuevo Alumno
             </a>
@@ -70,11 +70,11 @@
                                        class="btn btn-sm btn-outline-primary" title="Ver detalle">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}"
+                                    <a sec:authorize="hasAuthority('EDITAR_ALUMNOS')" th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}"
                                        class="btn btn-sm btn-outline-warning" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                    <button sec:authorize="hasAuthority('ELIMINAR_ALUMNOS')" type="button" class="btn btn-sm btn-outline-danger"
                                             th:data-legajo="${alumno.legajo}"
                                             th:data-nombre="${alumno.nombreCompleto}"
                                             onclick="eliminarAlumno(this.dataset.legajo, this.dataset.nombre)"
@@ -90,6 +90,7 @@
             </div>
         </div>
     </div>
+
     <!-- El modal de eliminación se crea dinámicamente en common.js -->
     <!-- Script específico para la página de lista -->
     <script src="/js/alumnos/lista-alumnos.js"></script>

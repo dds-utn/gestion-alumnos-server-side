@@ -7,7 +7,7 @@
                 <span th:text="${titulo}">Detalle del Alumno</span>
             </h1>
             <div>
-                <a th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}" class="btn btn-warning me-2">
+                <a sec:authorize="hasAuthority('EDITAR_ALUMNOS')"  th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}" class="btn btn-warning me-2">
                     <i class="fas fa-edit me-1"></i>
                     Editar
                 </a>
@@ -112,11 +112,11 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <a th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}" class="btn btn-warning">
+                            <a sec:authorize="hasAuthority('EDITAR_ALUMNOS')"  th:href="@{/alumnos/{legajo}/editar(legajo=${alumno.legajo})}" class="btn btn-warning">
                                 <i class="fas fa-edit me-1"></i>
                                 Editar Alumno
                             </a>
-                            <button type="button" class="btn btn-danger" 
+                            <button sec:authorize="hasAuthority('ELIMINAR_ALUMNOS')"  type="button" class="btn btn-danger"
                                     th:data-legajo="${alumno.legajo}"
                                     th:data-nombre="${alumno.nombreCompleto}"
                                     onclick="eliminarAlumno(this.dataset.legajo, this.dataset.nombre)">
@@ -128,7 +128,7 @@
                                 <i class="fas fa-list me-1"></i>
                                 Ver Todos los Alumnos
                             </a>
-                            <a href="/alumnos/nuevo" class="btn btn-outline-primary">
+                            <a sec:authorize="hasAuthority('CREAR_ALUMNOS')"  href="/alumnos/nuevo" class="btn btn-outline-primary">
                                 <i class="fas fa-plus me-1"></i>
                                 Nuevo Alumno
                             </a>

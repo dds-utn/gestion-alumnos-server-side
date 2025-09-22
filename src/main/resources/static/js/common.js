@@ -24,6 +24,20 @@ function eliminarAlumno(legajo, nombreCompleto = '') {
         formEliminar.action = '';
         formEliminar.action = '/alumnos/' + legajo + '/eliminar';
         
+        // Limpiar inputs CSRF anteriores
+        const csrfInputs = formEliminar.querySelectorAll('input[name="_csrf"]');
+        csrfInputs.forEach(input => input.remove());
+        
+        // Agregar token CSRF
+        const csrfToken = document.querySelector('meta[name="_csrf"]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_csrf';
+            csrfInput.value = csrfToken.getAttribute('content');
+            formEliminar.appendChild(csrfInput);
+        }
+        
         // Limpiar event listeners anteriores
         const btnConfirmar = formEliminar.querySelector('button[type="submit"]');
         if (btnConfirmar) {

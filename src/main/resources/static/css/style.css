@@ -33,6 +33,50 @@ body {
     color: rgba(255, 255, 255, 0.8) !important;
 }
 
+/* Estilos específicos para el botón de logout */
+.navbar-nav form {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.navbar-nav form input[type="hidden"] {
+    display: none;
+}
+
+.navbar-nav .logout-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: inline-block;
+    vertical-align: top;
+    line-height: 1.5;
+}
+
+.navbar-nav .logout-btn:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    background: none;
+    border: none;
+    text-decoration: none;
+}
+
+.navbar-nav .logout-btn:focus {
+    color: rgba(255, 255, 255, 0.8) !important;
+    background: none;
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+
+.navbar-nav .logout-btn:active {
+    color: rgba(255, 255, 255, 0.8) !important;
+    background: none;
+    border: none;
+}
+
 /* Cards personalizadas */
 .card {
     border: none;

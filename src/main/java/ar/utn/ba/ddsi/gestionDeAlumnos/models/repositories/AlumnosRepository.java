@@ -1,14 +1,13 @@
 package ar.utn.ba.ddsi.gestionDeAlumnos.models.repositories;
 
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.Alumno;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.Contacto;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.TipoContacto;
+import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.alumnos.Alumno;
+import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.alumnos.Contacto;
+import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.alumnos.TipoContacto;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class AlumnosRepository {

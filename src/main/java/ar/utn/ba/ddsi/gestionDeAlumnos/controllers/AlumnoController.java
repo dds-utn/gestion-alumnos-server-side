@@ -6,6 +6,8 @@ import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.ValidationException;
 import ar.utn.ba.ddsi.gestionDeAlumnos.models.dto.AlumnoDTO;
 import ar.utn.ba.ddsi.gestionDeAlumnos.services.AlumnoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,19 +19,23 @@ import java.util.List;
 @Controller
 @RequestMapping("/alumnos")
 @RequiredArgsConstructor
+//@PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
 public class AlumnoController {
     private final AlumnoService alumnoService;
 
     @GetMapping
-    public String listarAlumnos(Model model) {
+    @PreAuthorize("hasAnyRole('DOCENTE', 'ADMIN')")
+    public String listarAlumnos(Model model, Authentication authentication) {
         List<AlumnoDTO> alumnos = alumnoService.obtenerTodosLosAlumnos();
         model.addAttribute("alumnos", alumnos);
         model.addAttribute("titulo", "Listado de alumnos");
         model.addAttribute("totalDeAlumnos", alumnos.size());
+        model.addAttribute("usuario", authentication.getName());
         return "alumnos/lista";
     }
 
     @GetMapping("/{legajo}")
+    @PreAuthorize("hasAnyRole('DOCENTE', 'ADMIN')")
     public String verDetalleAlumno(@PathVariable String legajo, Model model, RedirectAttributes redirectAttributes) {
         try {
             AlumnoDTO alumno = alumnoService.obtenerAlumnoPorLegajo(legajo).get();
@@ -47,6 +53,7 @@ public class AlumnoController {
     }
 
     @GetMapping("/nuevo")
+    @PreAuthorize("hasRole('ADMIN') and hasAnyAuthority('CREAR_ALUMNOS')")
     public String mostrarFormularioCrear(Model model) {
         model.addAttribute("alumno", new AlumnoDTO());
         model.addAttribute("titulo", "Crear Nuevo Alumno");
@@ -54,6 +61,7 @@ public class AlumnoController {
     }
 
     @PostMapping("/crear")
+    @PreAuthorize("hasRole('ADMIN') and hasAnyAuthority('CREAR_ALUMNOS')")
     public String crearAlumno(@ModelAttribute("alumno")AlumnoDTO alumnoDTO,
                               BindingResult bindingResult,
                               Model model,
@@ -83,6 +91,7 @@ public class AlumnoController {
     }
 
     @GetMapping("/{legajo}/editar")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('EDITAR_ALUMNOS')")
     public String mostrarFormularioEditar(@PathVariable String legajo, Model model, RedirectAttributes redirectAttributes) {
         try {
             AlumnoDTO alumnoDTO = alumnoService.obtenerAlumnoPorLegajo(legajo).get();
@@ -97,6 +106,7 @@ public class AlumnoController {
     }
 
     @PostMapping("/{legajo}/actualizar")
+    @PreAuthorize("hasAuthority('EDITAR_ALUMNOS')")
     public String actualizarAlumno(@PathVariable String legajo,
                                  @ModelAttribute("alumno") AlumnoDTO alumnoDTO,
                                  BindingResult bindingResult,
@@ -132,6 +142,7 @@ public class AlumnoController {
     }
 
     @PostMapping("/{legajo}/eliminar")
+    @PreAuthorize("hasAuthority('ELIMINAR_ALUMNOS')")
     public String eliminarAlumno(@PathVariable String legajo,
                                    @ModelAttribute("alumno") AlumnoDTO alumnoDTO,
                                    BindingResult bindingResult,

@@ -5,31 +5,31 @@
             <div class="mb-4">
                 <i class="fas fa-exclamation-triangle fa-5x text-warning"></i>
             </div>
-            
+
             <h1 class="display-4 mb-4">
-                <span th:text="${titulo}">No encontrado</span>
+                <span th:text="${titulo}"></span>
             </h1>
-            
+
             <div class="alert alert-warning mx-auto" style="max-width: 600px;" th:if="${mensaje}">
                 <i class="fas fa-info-circle me-2"></i>
-                <span th:text="${mensaje}">El recurso solicitado no fue encontrado</span>
+                <span th:text="${mensaje}"></span>
             </div>
-            
+
             <p class="lead text-muted mb-4">
-                Lo sentimos, la página o recurso que estás buscando no existe o ha sido movido.
+                Lo sentimos, usted no posee permisos para ingresar a esta página.
             </p>
-            
+
             <div class="d-flex justify-content-center gap-3">
                 <a href="/alumnos" class="btn btn-primary">
                     <i class="fas fa-home me-1"></i>
                     Ir a la Lista de Alumnos
                 </a>
-                <a sec:authorize="hasAuthority('CREAR_ALUMNOS')" href="/alumnos/nuevo" class="btn btn-outline-primary">
+                <a href="/alumnos/nuevo" class="btn btn-outline-primary">
                     <i class="fas fa-plus me-1"></i>
                     Crear Nuevo Alumno
                 </a>
             </div>
-            
+
             <div class="mt-5">
                 <h5 class="text-muted mb-3">¿Qué puedes hacer?</h5>
                 <div class="row justify-content-center">
@@ -70,6 +70,4 @@
     </div>
 </div>
 
-<!-- Script específico para la página 404 -->
-<script src="/js/404.js"></script>
 </html>
