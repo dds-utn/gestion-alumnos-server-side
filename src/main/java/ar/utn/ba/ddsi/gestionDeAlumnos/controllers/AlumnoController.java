@@ -19,7 +19,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/alumnos")
 @RequiredArgsConstructor
-//@PreAuthorize("hasAnyRole('ADMIN', 'DOCENTE')")
 public class AlumnoController {
     private final AlumnoService alumnoService;
 
