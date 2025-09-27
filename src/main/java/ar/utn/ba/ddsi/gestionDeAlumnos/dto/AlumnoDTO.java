@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.gestionDeAlumnos.models.dto;
+package ar.utn.ba.ddsi.gestionDeAlumnos.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

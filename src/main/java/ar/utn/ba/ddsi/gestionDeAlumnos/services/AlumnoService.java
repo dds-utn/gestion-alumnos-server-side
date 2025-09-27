@@ -3,12 +3,9 @@ package ar.utn.ba.ddsi.gestionDeAlumnos.services;
 import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.DuplicateLegajoException;
 import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.ValidationException;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.dto.AlumnoDTO;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.dto.ContactoDTO;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.alumnos.Alumno;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.alumnos.Contacto;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.alumnos.TipoContacto;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.repositories.AlumnosRepository;
+import ar.utn.ba.ddsi.gestionDeAlumnos.dto.AlumnoDTO;
+import ar.utn.ba.ddsi.gestionDeAlumnos.dto.ContactoDTO;
+import ar.utn.ba.ddsi.gestionDeAlumnos.dto.TipoContacto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,15 +15,19 @@ import java.util.Optional;
 @Service
 public class AlumnoService {
     @Autowired
-    private AlumnosRepository alumnosRepository;
+    private GestionAlumnosApiService gestionAlumnosApiService;
 
     public List<AlumnoDTO> obtenerTodosLosAlumnos() {
-        return this.alumnosRepository.findAll().stream().map(this::convertirADTO).toList();
+        return gestionAlumnosApiService.obtenerTodosLosAlumnos();
     }
 
     public Optional<AlumnoDTO> obtenerAlumnoPorLegajo(String legajo) {
-        Alumno alumno = intentarRecuperarAlumno(legajo);
-        return Optional.of(convertirADTO(alumno));
+        try {
+            AlumnoDTO alumno = gestionAlumnosApiService.obtenerAlumnoPorLegajo(legajo);
+            return Optional.of(alumno);
+        } catch (NotFoundException e) {
+            return Optional.empty();
+        }
     }
 
     public AlumnoDTO crearAlumno(AlumnoDTO alumnoDTO) {
@@ -34,15 +35,12 @@ public class AlumnoService {
         validarContactos(alumnoDTO);
         validarDuplicidadDeAlumno(alumnoDTO);
         
-        Alumno alumno = convertirDTOAEntity(alumnoDTO);
-        alumnosRepository.save(alumno);
-        
-        return convertirADTO(alumno);
+        return gestionAlumnosApiService.crearAlumno(alumnoDTO);
     }
 
     public AlumnoDTO actualizarAlumno(String legajo, AlumnoDTO alumnoDTO) {
         // Verificar que el alumno existe
-        intentarRecuperarAlumno(legajo);
+        gestionAlumnosApiService.obtenerAlumnoPorLegajo(legajo);
         
         validarDatosBasicos(alumnoDTO);
         validarContactos(alumnoDTO);
@@ -52,15 +50,12 @@ public class AlumnoService {
             validarDuplicidadDeAlumno(alumnoDTO);
         }
         
-        Alumno alumno = convertirDTOAEntity(alumnoDTO);
-        alumnosRepository.save(alumno);
-        
-        return convertirADTO(alumno);
+        return gestionAlumnosApiService.actualizarAlumno(legajo, alumnoDTO);
     }
 
     public void eliminarAlumno(String legajo) {
-        var alumno = intentarRecuperarAlumno(legajo);
-        alumnosRepository.deleteByLegajo(alumno.getLegajo());
+        gestionAlumnosApiService.obtenerAlumnoPorLegajo(legajo); // Verificar que existe
+        gestionAlumnosApiService.eliminarAlumno(legajo);
     }
 
     private void validarDatosBasicos(AlumnoDTO alumnoDTO) {
@@ -127,65 +122,8 @@ public class AlumnoService {
     }
 
     private void validarDuplicidadDeAlumno(AlumnoDTO alumnoDTO) {
-        Optional<Alumno> alumnoExistente = alumnosRepository.findByLegajo(alumnoDTO.getLegajo().trim());
-        if(alumnoExistente.isPresent()) {
+        if (gestionAlumnosApiService.existeAlumno(alumnoDTO.getLegajo().trim())) {
             throw new DuplicateLegajoException(alumnoDTO.getLegajo().trim());
         }
-    }
-
-    private Alumno intentarRecuperarAlumno(String legajo) {
-        Optional<Alumno> alumno = alumnosRepository.findByLegajo(legajo.trim());
-        if(alumno.isEmpty()) {
-            throw new NotFoundException("Alumno", legajo);
-        }
-        return alumno.get();
-    }
-
-    private AlumnoDTO convertirADTO(Alumno alumno) {
-        AlumnoDTO dto = new AlumnoDTO();
-        dto.setLegajo(alumno.getLegajo());
-        dto.setNombre(alumno.getNombre());
-        dto.setApellido(alumno.getApellido());
-        dto.setNombreCompleto(alumno.getNombreCompleto());
-        
-        List<ContactoDTO> contactosDTO = alumno.getContactos().stream()
-                .map(this::convertirContactoADTO)
-                .collect(java.util.stream.Collectors.toList());
-        dto.setContactos(contactosDTO);
-        
-        return dto;
-    }
-
-    private Alumno convertirDTOAEntity(AlumnoDTO alumnoDTO) {
-        Alumno alumno = new Alumno();
-        alumno.setLegajo(alumnoDTO.getLegajo().trim());
-        alumno.setNombre(alumnoDTO.getNombre().trim());
-        alumno.setApellido(alumnoDTO.getApellido().trim());
-        
-        List<Contacto> contactos = alumnoDTO.getContactos().stream()
-                .filter(contacto -> contacto.getTipoContacto() != null && 
-                        contacto.getValor() != null && !contacto.getValor().trim().isEmpty())
-                .map(this::convertirContactoDTOAEntity)
-                .collect(java.util.stream.Collectors.toList());
-        alumno.setContactos(contactos);
-        
-        return alumno;
-    }
-
-    private ContactoDTO convertirContactoADTO(Contacto contacto) {
-        ContactoDTO dto = new ContactoDTO();
-        dto.setId(contacto.getId());
-        dto.setTipoContacto(contacto.getTipoContacto());
-        dto.setValor(contacto.getValor());
-        dto.setTipoContactoDescripcion(contacto.getTipoContacto().toString());
-        return dto;
-    }
-
-    private Contacto convertirContactoDTOAEntity(ContactoDTO contactoDTO) {
-        Contacto contacto = new Contacto();
-        contacto.setId(contactoDTO.getId());
-        contacto.setTipoContacto(contactoDTO.getTipoContacto());
-        contacto.setValor(contactoDTO.getValor().trim());
-        return contacto;
     }
 }

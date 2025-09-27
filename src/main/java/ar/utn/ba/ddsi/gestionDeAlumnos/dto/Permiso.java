@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.gestionDeAlumnos.models.entities.usuarios;
+package ar.utn.ba.ddsi.gestionDeAlumnos.dto;
 
 public enum Permiso {
     EDITAR_ALUMNOS,

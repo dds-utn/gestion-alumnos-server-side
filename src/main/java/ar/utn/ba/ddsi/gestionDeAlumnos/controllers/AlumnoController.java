@@ -3,9 +3,12 @@ package ar.utn.ba.ddsi.gestionDeAlumnos.controllers;
 import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.DuplicateLegajoException;
 import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.ValidationException;
-import ar.utn.ba.ddsi.gestionDeAlumnos.models.dto.AlumnoDTO;
+import ar.utn.ba.ddsi.gestionDeAlumnos.dto.AlumnoDTO;
+import ar.utn.ba.ddsi.gestionDeAlumnos.providers.CustomAuthProvider;
 import ar.utn.ba.ddsi.gestionDeAlumnos.services.AlumnoService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,7 @@ import java.util.List;
 @RequestMapping("/alumnos")
 @RequiredArgsConstructor
 public class AlumnoController {
+    private static final Logger log = LoggerFactory.getLogger(AlumnoController.class);
     private final AlumnoService alumnoService;
 
     @GetMapping
@@ -67,7 +71,6 @@ public class AlumnoController {
                               RedirectAttributes redirectAttributes) {
         try {
             AlumnoDTO alumnoCreado = alumnoService.crearAlumno(alumnoDTO);
-
             redirectAttributes.addFlashAttribute("mensaje", "Alumno creado exitosamente");
             redirectAttributes.addFlashAttribute("tipoMensaje", "success");
             return "redirect:/alumnos/" + alumnoCreado.getLegajo();
@@ -83,6 +86,7 @@ public class AlumnoController {
             return "alumnos/crear";
         }
         catch (Exception e) {
+            log.error("Error al crear alumno", e);
             model.addAttribute("error", "Error al crear el alumno: " + e.getMessage());
             model.addAttribute("titulo", "Crear Nuevo Alumno");
             return "alumnos/crear";
