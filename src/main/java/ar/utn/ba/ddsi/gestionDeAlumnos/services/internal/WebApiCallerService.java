@@ -43,7 +43,7 @@ public class WebApiCallerService {
             // Primer intento con el token actual
             return apiCall.execute(accessToken);
         } catch (WebClientResponseException e) {
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED && refreshToken != null) {
+            if ((e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) && refreshToken != null) {
                 try {
                     // Token expirado, intentar refresh
                     AuthResponseDTO newTokens = refreshToken(refreshToken);
@@ -170,7 +170,7 @@ public class WebApiCallerService {
 
             AuthResponseDTO response = webClient
                     .post()
-                    .uri(authServiceUrl + "/refresh")
+                    .uri(authServiceUrl + "/auth/refresh")
                     .bodyValue(refreshRequest)
                     .retrieve()
                     .bodyToMono(AuthResponseDTO.class)
